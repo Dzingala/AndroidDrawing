@@ -8,9 +8,7 @@ import by.epam.androiddrawing.graph.CustomGraph;
 
 public class MainActivity extends AppCompatActivity {
 
-    //TextView tw;
     CustomGraph customGraph;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

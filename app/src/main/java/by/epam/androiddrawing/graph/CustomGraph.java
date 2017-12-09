@@ -38,16 +38,12 @@ public class CustomGraph extends View{
     public boolean gr_drawGrid = false;
 
     public float[] input_xdata, input_ydata;
-    private int[] scaled_xdata, scaled_ydata;//масштабирование данные для точек
-    private int[] label_x, label_y; //координаты точек с подписями значений
-    private float[] a_label_x, a_label_y;//цифры для подписи по осям
 
     private int graphHeight, graphWidth; //внутренний размер graphView без паддинга
     private int drawingWorkspaceHeight, drawingWorkspaceWidth; //размер области, в которой рисуем.
     private int fromWorkspaceToScalesHeight = 40, fromWorkspaceToScalesWidht = 40; //расстояние от области до осей
     private int x0, y0; // координаты перекрестия осей
     private int titleWidth;//ширина подписи графа в пикселях
-    private int titleHeight;//высота подписи графа в пикселях
     private int pointingArrowIndents = 10;
 
     private int fromBoundsToWorkspaceTop = 40;//расстояние от края экрана до границ рисования сверху
@@ -72,10 +68,6 @@ public class CustomGraph extends View{
         public boolean onScale(ScaleGestureDetector detector) {
             mScaleFactor *= detector.getScaleFactor();
             mScaleFactor = Math.max(0.1f, Math.min(mScaleFactor, 5.0f));
-
-
-            //init();
-            //onDataChanged();
             onSizeChanged(graphWidth+getPaddingLeft()+getPaddingRight(), graphHeight+getPaddingTop()+getPaddingBottom(),graphWidth, graphHeight);
             invalidate();
             return true;
@@ -100,7 +92,6 @@ public class CustomGraph extends View{
             fromWorkspaceToScalesWidht = ta.getInt(R.styleable.CustomGraph_paddingSides, 40);
             fromWorkspaceToScalesHeight = ta.getInt(R.styleable.CustomGraph_paddingTopBot, 40);
             pointingArrowIndents = ta.getInt(R.styleable.CustomGraph_strokesSize, 5);
-
         }finally {
             ta.recycle();
         }
@@ -114,9 +105,7 @@ public class CustomGraph extends View{
         final int action = event.getAction();
 
         switch (action){
-
             case MotionEvent.ACTION_DOWN:
-
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
@@ -130,15 +119,11 @@ public class CustomGraph extends View{
                 y = event.getY();
                 dx = x - startx;
                 dy = y - starty;
-                //init();
-                //onDataChanged();
                 onSizeChanged(graphWidth+getPaddingLeft()+getPaddingRight(), graphHeight+getPaddingTop()+getPaddingBottom(),graphWidth, graphHeight);
                 invalidate();
-
         }
         return true;
     }
-
 
     public CustomGraph(Context context) {
         super(context);
@@ -206,8 +191,8 @@ public class CustomGraph extends View{
 
         if(Math.abs(yMin)>=Math.abs(yMax))ySize=(int)Math.ceil(Math.abs(yMin)*2);
         else ySize=(int)Math.ceil(Math.abs(yMax)*2);
-
     }
+
     public void setData(float[] x, float[] y){
         input_xdata=new float[x.length];
         input_ydata = new float[y.length];
@@ -229,18 +214,6 @@ public class CustomGraph extends View{
         drawingWorkspaceHeight = graphHeight - fromBoundsToWorkspaceTop - fromBoundsToWorkspaceBot;
         x0 = graphWidth/2;
         y0 = graphHeight/2;
-//        if(gr_showTitle){
-//            x0 = graphWidth/2;
-//
-//            int textSpace=gr_textSize*2;
-//            fromBoundsToWorkspaceTop = fromBoundsToWorkspaceTop + textSpace;
-//            drawingWorkspaceHeight-=textSpace;
-//
-//            y0=(drawingWorkspaceHeight/2) + fromBoundsToWorkspaceTop;
-//        }else{
-//            x0 = graphWidth/2;
-//            y0 = graphHeight/2;
-//        }
         onDataChanged();
     }
 
@@ -268,6 +241,51 @@ public class CustomGraph extends View{
     private void drawGrid(Canvas canvas) {
         drawXgrid(canvas);
         drawYgrid(canvas);
+    }
+
+    private void drawStrokes(Canvas canvas) {
+        drawXstrokes(canvas);
+        drawYstrokes(canvas);
+    }
+
+    private void drawTitle(Canvas canvas) {
+        int widhtFrom=x0 - titleWidth / 2;
+        int heightFrom = fromBoundsToWorkspaceTop - gr_textSize*7/10;
+        path.reset();
+        path.moveTo(widhtFrom,heightFrom);
+        path.lineTo(widhtFrom + titleWidth,heightFrom);
+        canvas.drawTextOnPath(gr_title,path,0,0,titlePaint);
+        path.reset();
+    }
+
+    private void drawBounds(Canvas canvas){
+        path.reset();
+        int textSize = gr_showTitle?gr_textSize*2:0;
+        path.moveTo(fromBoundsToWorkspaceLeft, fromBoundsToWorkspaceTop - textSize);
+        path.lineTo(fromBoundsToWorkspaceLeft + drawingWorkspaceWidth, fromBoundsToWorkspaceTop - textSize);
+        if(gr_showTitle) {
+            path.lineTo(fromBoundsToWorkspaceLeft + drawingWorkspaceWidth, fromBoundsToWorkspaceTop);
+            path.lineTo(fromBoundsToWorkspaceLeft, fromBoundsToWorkspaceTop);
+            path.lineTo(fromBoundsToWorkspaceLeft, fromBoundsToWorkspaceTop - gr_textSize * 2);
+        }
+        else{
+            path.moveTo(fromBoundsToWorkspaceLeft, fromBoundsToWorkspaceTop);
+        }
+        path.lineTo(fromBoundsToWorkspaceLeft,fromBoundsToWorkspaceTop+drawingWorkspaceHeight);
+        path.lineTo(fromBoundsToWorkspaceLeft+drawingWorkspaceWidth,fromBoundsToWorkspaceTop+drawingWorkspaceHeight);
+        path.lineTo(fromBoundsToWorkspaceLeft+drawingWorkspaceWidth,fromBoundsToWorkspaceTop);
+        canvas.drawPath(path,boundsPaint);
+
+        path.reset();
+
+        path.moveTo(fromBoundsToWorkspaceLeft+5/2,fromBoundsToWorkspaceTop+5/2);
+        path.lineTo(fromBoundsToWorkspaceLeft+5/2,fromBoundsToWorkspaceTop+drawingWorkspaceHeight-5/2);
+        path.lineTo(fromBoundsToWorkspaceLeft+drawingWorkspaceWidth-5/2,fromBoundsToWorkspaceTop+drawingWorkspaceHeight-5/2);
+        path.lineTo(fromBoundsToWorkspaceLeft+drawingWorkspaceWidth-5/2,fromBoundsToWorkspaceTop+5/2);
+        path.lineTo(fromBoundsToWorkspaceLeft+5/2,fromBoundsToWorkspaceTop+5/2);
+        canvas.drawPath(path,backgroundPaint);
+
+        path.reset();
     }
 
     private void drawYgrid(Canvas canvas) {
@@ -298,12 +316,10 @@ public class CustomGraph extends View{
                 canvas.drawPath(path, axisPaint);
                 path.reset();
             }
-
             path.moveTo(xLeft, y0 - step * drawValue);
             path.lineTo(xRight, y0 - step * drawValue);
             canvas.drawPath(path, axisPaint);
             path.reset();
-
         }
     }
 
@@ -337,7 +353,6 @@ public class CustomGraph extends View{
                 canvas.drawPath(path, axisPaint);
                 path.reset();
             }
-
         }
     }
 
@@ -346,14 +361,13 @@ public class CustomGraph extends View{
         a=(prevY-y);
         c=prevX*y-x*prevY;
         return -c/a;
-
     }
+
     private Float getIntersectionY(float x, float y, float prevX, float prevY){
         float b,c;
         b=(x-prevX);
         c=prevX*y-x*prevY;
         return -c/b;
-
     }
 
     private void drawPoints(Canvas canvas) {
@@ -372,7 +386,6 @@ public class CustomGraph extends View{
         if(gr_axisStyle==2){
             Ystep*=2;
         }
-
         for(int i = 0; i < input_xdata.length ; i++){
             float resX=x0+Xstep*input_xdata[i];
             float resY=y0-Ystep*input_ydata[i];
@@ -483,7 +496,6 @@ public class CustomGraph extends View{
                             path.moveTo(prevX, prevY);
                             path.lineTo(x0, intersectY);
                         }
-
                     }
                 }
                 continue;
@@ -492,11 +504,6 @@ public class CustomGraph extends View{
         }
         canvas.drawPath(path,graphPaint);
         path.reset();
-    }
-
-    private void drawStrokes(Canvas canvas) {
-        drawXstrokes(canvas);
-        drawYstrokes(canvas);
     }
 
     private void drawXstrokes(Canvas canvas) {
@@ -575,7 +582,6 @@ public class CustomGraph extends View{
                 canvas.drawPath(path, axisPaint);
                 path.reset();
             }
-
         }
     }
 
@@ -640,18 +646,9 @@ public class CustomGraph extends View{
         }
     }
 
-    private void drawTitle(Canvas canvas) {
-        int widhtFrom=x0 - titleWidth / 2;
-        int heightFrom = fromBoundsToWorkspaceTop - gr_textSize*7/10;
-        path.reset();
-        path.moveTo(widhtFrom,heightFrom);
-        path.lineTo(widhtFrom + titleWidth,heightFrom);
-        canvas.drawTextOnPath(gr_title,path,0,0,titlePaint);
-        path.reset();
-    }
-
     private void drawAxes(Canvas canvas) {
         if(gr_axisStyle==0) {
+
             canvas.drawCircle(x0, y0, 5, axisPaint);
             path.reset();
             path.moveTo(x0, y0 - drawingWorkspaceHeight / 2 + fromWorkspaceToScalesHeight);
@@ -668,7 +665,6 @@ public class CustomGraph extends View{
                 path.moveTo(x0, y0 + drawingWorkspaceHeight / 2 - fromWorkspaceToScalesHeight);
             }
 
-
             path.moveTo(x0 - drawingWorkspaceWidth / 2 + fromWorkspaceToScalesWidht, y0);
             if(!gr_drawGrid) {
                 path.moveTo(x0 - drawingWorkspaceWidth / 2 + fromWorkspaceToScalesWidht + pointingArrowIndents, y0 - pointingArrowIndents);
@@ -684,7 +680,9 @@ public class CustomGraph extends View{
             canvas.drawPath(path, axisPaint);
 
             path.reset();
+
         } else if(gr_axisStyle==1){
+
             x0=x0-drawingWorkspaceWidth/2 + fromWorkspaceToScalesWidht;
             canvas.drawCircle(x0, y0, 5, axisPaint);
             path.reset();
@@ -702,7 +700,6 @@ public class CustomGraph extends View{
                 path.moveTo(x0, y0 + drawingWorkspaceHeight / 2 - fromWorkspaceToScalesHeight);
             }
 
-
             path.moveTo(x0, y0);
             path.lineTo(x0 + drawingWorkspaceWidth  - fromWorkspaceToScalesWidht*2 , y0);
             if(!gr_drawGrid) {
@@ -712,7 +709,9 @@ public class CustomGraph extends View{
             canvas.drawPath(path, axisPaint);
 
             path.reset();
+
         } else if(gr_axisStyle==2) {
+
             x0 = x0 - drawingWorkspaceWidth / 2 + fromWorkspaceToScalesWidht;
             y0 = y0 + drawingWorkspaceHeight / 2 - fromWorkspaceToScalesHeight;
             canvas.drawCircle(x0, y0, 5, axisPaint);
@@ -733,37 +732,7 @@ public class CustomGraph extends View{
             canvas.drawPath(path, axisPaint);
 
             path.reset();
+
         }
     }
-
-    private void drawBounds(Canvas canvas){
-        path.reset();
-        int textSize = gr_showTitle?gr_textSize*2:0;
-        path.moveTo(fromBoundsToWorkspaceLeft, fromBoundsToWorkspaceTop - textSize);
-        path.lineTo(fromBoundsToWorkspaceLeft + drawingWorkspaceWidth, fromBoundsToWorkspaceTop - textSize);
-        if(gr_showTitle) {
-            path.lineTo(fromBoundsToWorkspaceLeft + drawingWorkspaceWidth, fromBoundsToWorkspaceTop);
-            path.lineTo(fromBoundsToWorkspaceLeft, fromBoundsToWorkspaceTop);
-            path.lineTo(fromBoundsToWorkspaceLeft, fromBoundsToWorkspaceTop - gr_textSize * 2);
-        }
-        else{
-            path.moveTo(fromBoundsToWorkspaceLeft, fromBoundsToWorkspaceTop);
-        }
-        path.lineTo(fromBoundsToWorkspaceLeft,fromBoundsToWorkspaceTop+drawingWorkspaceHeight);
-        path.lineTo(fromBoundsToWorkspaceLeft+drawingWorkspaceWidth,fromBoundsToWorkspaceTop+drawingWorkspaceHeight);
-        path.lineTo(fromBoundsToWorkspaceLeft+drawingWorkspaceWidth,fromBoundsToWorkspaceTop);
-        canvas.drawPath(path,boundsPaint);
-
-        path.reset();
-
-        path.moveTo(fromBoundsToWorkspaceLeft+5/2,fromBoundsToWorkspaceTop+5/2);
-        path.lineTo(fromBoundsToWorkspaceLeft+5/2,fromBoundsToWorkspaceTop+drawingWorkspaceHeight-5/2);
-        path.lineTo(fromBoundsToWorkspaceLeft+drawingWorkspaceWidth-5/2,fromBoundsToWorkspaceTop+drawingWorkspaceHeight-5/2);
-        path.lineTo(fromBoundsToWorkspaceLeft+drawingWorkspaceWidth-5/2,fromBoundsToWorkspaceTop+5/2);
-        path.lineTo(fromBoundsToWorkspaceLeft+5/2,fromBoundsToWorkspaceTop+5/2);
-        canvas.drawPath(path,backgroundPaint);
-
-        path.reset();
-    }
-
 }
