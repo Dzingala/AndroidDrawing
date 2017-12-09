@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:graph="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="by.epam.androiddrawing.activity.MainActivity">
+
+    <by.epam.androiddrawing.graph.CustomGraph
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/customGraph"
+        graph:graphTitle="Custom graph"
+        graph:showTitle="true"
+        graph:graphColor="#ca0000"
+        graph:graphBackgroundColor="#dae6ea"
+        graph:axisStyle="cross"
+        graph:numberXmarks="2"
+        graph:numberYmarks="4"
+        graph:strokesTextSize="10"
+        graph:paddingSides="40"
+        graph:paddingTopBot="40"
+        graph:strokesSize="5"
+        graph:drawGrid="true"/>
+
+</android.support.constraint.ConstraintLayout>

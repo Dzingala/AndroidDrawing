@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomGraph">
+        <attr name="showTitle" format="boolean"/>
+        <attr name="graphTitle" format="string"/>
+        <attr name="graphTextSize" format="dimension"/>
+        <attr name="numberXmarks" format="integer"/><!-- кол-во делений на осях -->
+        <attr name="numberYmarks" format="integer"/>
+        <attr name="graphColor" format="color"/>
+        <attr name="graphBackgroundColor" format="color"/>
+        <attr name="graphAxisColor" format="color"/>
+        <attr name="strokesTextSize" format="integer"/>
+        <attr name="paddingSides" format="integer" />
+        <attr name="paddingTopBot" format="integer" />
+        <attr name="strokesSize" format="integer" />
+        <attr name="drawGrid" format="boolean" />
+        <attr name="axisStyle" format="enum">
+            <enum name="none" value="0"/>
+            <enum name="cross" value="1"/>
+            <enum name="box" value="2"/>
+        </attr>
+    </declare-styleable>
+</resources>
