@@ -23,21 +23,21 @@ public class CustomGraph extends View{
 
     private ScaleGestureDetector mScaleDetector;
     private float mScaleFactor = 1.f;
-    public float dx,dy,startx=0f,starty=0f;
+    private float dx,dy,startx=0f,starty=0f;
 
-    public boolean gr_showTitle = false;
-    public String gr_title = "";
-    public int gr_textSize = 20;
-    public int gr_graphColor = Color.rgb(0,0,0);
-    public int gr_graphBackgroundColor = Color.rgb(255,255,255);
-    public int gr_graphAxisColor = Color.rgb(0,0,0);
-    public int gr_axisStyle = 0;//осей стиль
-    public int gr_numberXmarks = 5;
-    public int gr_numberYmarks = 5;
-    public int gr_strokesTextSize=10;
-    public boolean gr_drawGrid = false;
+    private boolean gr_showTitle = false;
+    private String gr_title = "";
+    private int gr_textSize = 20;
+    private int gr_graphColor = Color.rgb(0,0,0);
+    private int gr_graphBackgroundColor = Color.rgb(255,255,255);
+    private int gr_graphAxisColor = Color.rgb(0,0,0);
+    private int gr_axisStyle = 0;//осей стиль
+    private int gr_numberXmarks = 5;
+    private int gr_numberYmarks = 5;
+    private int gr_strokesTextSize=10;
+    private boolean gr_drawGrid = false;
 
-    public float[] input_xdata, input_ydata;
+    private float[] input_xdata, input_ydata;
 
     private int graphHeight, graphWidth; //внутренний размер graphView без паддинга
     private int drawingWorkspaceHeight, drawingWorkspaceWidth; //размер области, в которой рисуем.
@@ -45,6 +45,7 @@ public class CustomGraph extends View{
     private int x0, y0; // координаты перекрестия осей
     private int titleWidth;//ширина подписи графа в пикселях
     private int pointingArrowIndents = 10;
+    private float boundsToDrawingSpaceIndentation = 2.5f;
 
     private int fromBoundsToWorkspaceTop = 40;//расстояние от края экрана до границ рисования сверху
     private int fromBoundsToWorkspaceBot = 40;//-||- снизу
@@ -278,11 +279,11 @@ public class CustomGraph extends View{
 
         path.reset();
 
-        path.moveTo(fromBoundsToWorkspaceLeft+5/2,fromBoundsToWorkspaceTop+5/2);
-        path.lineTo(fromBoundsToWorkspaceLeft+5/2,fromBoundsToWorkspaceTop+drawingWorkspaceHeight-5/2);
-        path.lineTo(fromBoundsToWorkspaceLeft+drawingWorkspaceWidth-5/2,fromBoundsToWorkspaceTop+drawingWorkspaceHeight-5/2);
-        path.lineTo(fromBoundsToWorkspaceLeft+drawingWorkspaceWidth-5/2,fromBoundsToWorkspaceTop+5/2);
-        path.lineTo(fromBoundsToWorkspaceLeft+5/2,fromBoundsToWorkspaceTop+5/2);
+        path.moveTo(fromBoundsToWorkspaceLeft+boundsToDrawingSpaceIndentation,fromBoundsToWorkspaceTop+boundsToDrawingSpaceIndentation);
+        path.lineTo(fromBoundsToWorkspaceLeft+boundsToDrawingSpaceIndentation,fromBoundsToWorkspaceTop+drawingWorkspaceHeight-boundsToDrawingSpaceIndentation);
+        path.lineTo(fromBoundsToWorkspaceLeft+drawingWorkspaceWidth-boundsToDrawingSpaceIndentation,fromBoundsToWorkspaceTop+drawingWorkspaceHeight-boundsToDrawingSpaceIndentation);
+        path.lineTo(fromBoundsToWorkspaceLeft+drawingWorkspaceWidth-boundsToDrawingSpaceIndentation,fromBoundsToWorkspaceTop+boundsToDrawingSpaceIndentation);
+        path.lineTo(fromBoundsToWorkspaceLeft+boundsToDrawingSpaceIndentation,fromBoundsToWorkspaceTop+boundsToDrawingSpaceIndentation);
         canvas.drawPath(path,backgroundPaint);
 
         path.reset();
